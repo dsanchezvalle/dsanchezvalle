@@ -1,5 +1,5 @@
-// Builds the static SVG assets of the profile README (hero and project cards).
-import { readFile, writeFile } from "node:fs/promises";
+// Builds the static SVG assets of the profile README (hero and project illustrations).
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const font = (await readFile("assets/src/bricolage-600.woff2")).toString("base64");
 const SANS = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif`;
@@ -81,61 +81,51 @@ ${style(animation)}
 `;
 }
 
-const STATUS = {
-  live: { label: "Live", cls: "live" },
-  published: { label: "Published", cls: "live" },
-  wip: { label: "In progress", cls: "wip" },
-};
 
+function heroMobile() {
+  const pad = 40;
+  const frameTop = 34;
+  const capTop = frameTop + pad;
+  const line1 = capTop + 46;
+  const animation = `
+.redline { opacity: 0; animation: reveal 600ms ease-out 500ms forwards; }
+@keyframes reveal { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .redline { opacity: 1; animation: none; } }`;
+  const tagline = ["I turn product intent into accessible,", "coherent interfaces with React and", "Next.js, and I write down what I", "decided, what I ruled out and why."];
+  const handles = [
+    [0.5, frameTop],
+    [639.5, frameTop],
+    [0.5, 519.5],
+    [639.5, 519.5],
+  ]
+    .map(([x, y]) => `<rect x="${x - 3.5}" y="${y - 3.5}" width="7" height="7" fill="var(--canvas)" stroke="var(--spec)"/>`)
+    .join("");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 524" width="640" height="524" role="img" aria-label="David Sánchez Valle. Frontend engineer for product, UX and design systems. Medellín, Colombia.">
+${style(animation)}
+<text x="0" y="22" font-size="17" class="spec">profile / david-sanchez-valle</text>
+<rect x="0.5" y="${frameTop}" width="639" height="485.5" class="hair"/>
+<text x="${pad}" y="${line1}" font-size="70" class="display">David</text>
+<text x="${pad}" y="${line1 + 76}" font-size="70" class="display">Sánchez Valle</text>
+<text x="${pad}" y="${line1 + 136}" font-size="28">Frontend engineer for product,</text>
+<text x="${pad}" y="${line1 + 172}" font-size="28">UX and design systems</text>
+${tagline.map((l, i) => `<text x="${pad}" y="${line1 + 228 + i * 33}" font-size="24" class="muted">${l}</text>`).join("\n")}
+<text x="${pad}" y="${519 - 30}" font-size="20" class="muted">Medellín, Colombia</text>
+<g class="redline">
+  <rect x="0.5" y="${frameTop}" width="639" height="485.5" class="spec-line"/>
+  ${handles}
+  <path d="M${pad + 230} ${frameTop + 1} V${capTop} M${pad + 224} ${frameTop + 1} H${pad + 236} M${pad + 224} ${capTop} H${pad + 236}" class="spec-line"/>
+  <rect x="${pad + 242}" y="${(frameTop + capTop) / 2 - 11}" width="32" height="22" rx="4" fill="var(--spec)"/>
+  <text x="${pad + 258}" y="${(frameTop + capTop) / 2 + 5}" font-size="14" text-anchor="middle" style="fill: var(--canvas)">40</text>
+  <path d="M${pad + 220} ${line1 - 24} H${pad + 252}" class="spec-line" stroke-dasharray="3 3"/>
+  <text x="${pad + 260}" y="${line1 - 28}" font-size="16" class="spec">Bricolage Grotesque, 600</text>
+  <text x="${pad + 260}" y="${line1 - 7}" font-size="16" class="spec">70 / 76, tracking 0</text>
+</g>
+</svg>
+`;
+}
 
 const DOTS = `<pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="var(--dot)"/></pattern>`;
-
-const pill = (right, status, statusNote) => {
-  const s = STATUS[status];
-  const text = statusNote ? `${s.label}, ${statusNote}` : s.label;
-  const w = Math.round(text.length * 8.4) + 34;
-  return `<rect x="${right - w}" y="16" width="${w}" height="30" rx="15" class="surface"/>
-<circle cx="${right - w + 16}" cy="31" r="4.5" class="${s.cls}"/>
-<text x="${right - w + 28}" y="36.5" font-size="16">${escape(text)}</text>`;
-};
-
-function card({ title, status, statusNote, lines, stack, motif, alt }) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" width="600" height="380" role="img" aria-label="${escape(alt)}">
-${style()}
-<defs>${DOTS}<clipPath id="c"><path d="M0.5 204 V12.5 A12 12 0 0 1 12.5 0.5 H587.5 A12 12 0 0 1 599.5 12.5 V204 Z"/></clipPath></defs>
-<g clip-path="url(#c)">
-  <rect x="0" y="0" width="600" height="204" class="canvas"/>
-  <rect x="0" y="0" width="600" height="204" fill="url(#dots)"/>
-  ${motif}
-</g>
-<path d="M0.5 204 H599.5" class="hair"/>
-<rect x="0.5" y="0.5" width="599" height="379" rx="12" class="hair"/>
-${pill(572, status, statusNote)}
-<text x="28" y="250" font-size="30" class="display">${escape(title)}</text>
-${lines.map((l, i) => `<text x="28" y="${286 + i * 26}" font-size="19" class="muted">${escape(l)}</text>`).join("\n")}
-<text x="28" y="358" font-size="16" class="muted">${escape(stack)}</text>
-</svg>
-`;
-}
-
-function featured({ title, status, statusNote, lines, stack, motif, alt }) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1216 380" width="1216" height="380" role="img" aria-label="${escape(alt)}">
-${style()}
-<defs>${DOTS}<clipPath id="c"><rect x="0.5" y="0.5" width="1215" height="379" rx="12"/></clipPath></defs>
-<g clip-path="url(#c)">
-  <rect x="0" y="0" width="600" height="380" class="canvas"/>
-  <rect x="0" y="0" width="600" height="380" fill="url(#dots)"/>
-  ${motif}
-</g>
-<path d="M600 0.5 V379.5" class="hair"/>
-<rect x="0.5" y="0.5" width="1215" height="379" rx="12" class="hair"/>
-${pill(1188, status, statusNote)}
-<text x="640" y="150" font-size="36" class="display">${escape(title)}</text>
-${lines.map((l, i) => `<text x="640" y="${194 + i * 28}" font-size="20" class="muted">${escape(l)}</text>`).join("\n")}
-<text x="640" y="${194 + lines.length * 28 + 34}" font-size="16" class="muted">${escape(stack)}</text>
-</svg>
-`;
-}
 
 const t = (x, y, text, { size = 14, cls = "", anchor = "start", weight } = {}) =>
   `<text x="${x}" y="${y}" font-size="${size}"${cls ? ` class="${cls}"` : ""}${anchor !== "start" ? ` text-anchor="${anchor}"` : ""}${weight ? ` font-weight="${weight}"` : ""}>${escape(text)}</text>`;
@@ -174,12 +164,12 @@ const motifs = {
   ${t(466, 283, "Touch targets", { cls: "spec" })}
   <path d="M378 98 H460" class="spec-line" stroke-dasharray="2 3"/>
   ${t(466, 102, "Works offline", { cls: "spec" })}
-  <path d="M214 132 H150" class="spec-line" stroke-dasharray="2 3"/>
+  <path d="M200 132 H150" class="spec-line" stroke-dasharray="2 3"/>
   <rect x="56" y="122" width="20" height="20" rx="4" fill="var(--fg)"/>
   <rect x="78" y="122" width="20" height="20" rx="4" class="surface"/>
   ${t(104, 137, "7:1", { cls: "spec" })}
   ${t(56, 162, "Text contrast", { size: 13, cls: "muted" })}
-  <path d="M222 278 H150" class="spec-line" stroke-dasharray="2 3"/>
+  <path d="M200 278 H150" class="spec-line" stroke-dasharray="2 3"/>
   ${t(56, 274, "1 tap", { cls: "spec" })}
   ${t(56, 292, "to show an address", { size: 13, cls: "muted" })}`,
 
@@ -292,56 +282,110 @@ const motifs = {
   ${t(398, 194.5, "Estimated track, not official", { size: 12.5, cls: "muted" })}`,
 };
 
-const trotamundos = {
-  file: "trotamundos",
-  title: "Trotamundos",
-  status: "live",
-  statusNote: "invite only",
-  lines: ["An offline travel companion I built for my parents,", "designed for older travelers. Live and in daily use."],
-  stack: "JavaScript, PWA",
-  alt: "Trotamundos, live and invite only: an offline travel companion built for my parents, designed for older travelers.",
-};
+const workflowMobile = (() => {
+  const w = 112;
+  const h = 40;
+  const gap = 16;
+  const x = (col) => 26 + col * (w + gap);
+  const rows = [56, 148];
+  const steps = [
+    ["Issue", 0, 0, false],
+    ["Plan", 1, 0, true],
+    ["Build", 2, 0, false],
+    ["Review", 2, 1, false],
+    ["Merge", 1, 1, true],
+    ["Validate", 0, 1, true],
+  ];
+  const pills = steps
+    .map(([s, col, row, human]) => {
+      const y = rows[row];
+      return `<rect x="${x(col) + 0.5}" y="${y + 0.5}" width="${w - 1}" height="${h - 1}" rx="${h / 2 - 0.5}" class="${human ? "tint" : "surface"}"/>${t(x(col) + w / 2, y + 26, s, { size: 17, cls: human ? "spec" : "muted", anchor: "middle" })}`;
+    })
+    .join("");
+  const cx = x(2) + w / 2;
+  return `
+  <path d="M${x(0) + w + 3} ${rows[0] + 20} H${x(1) - 3} M${x(1) + w + 3} ${rows[0] + 20} H${x(2) - 3}" stroke="var(--line)" stroke-width="1.5"/>
+  <path d="M${cx} ${rows[0] + h + 3} V${rows[1] - 3}" stroke="var(--line)" stroke-width="1.5"/>
+  <path d="M${x(1) + w + 3} ${rows[1] + 20} H${x(2) - 3} M${x(0) + w + 3} ${rows[1] + 20} H${x(1) - 3}" stroke="var(--line)" stroke-width="1.5"/>
+  <path d="M${x(2) + w + 2} ${rows[1] + 20} C${x(2) + w + 30} ${rows[1] + 20} ${x(2) + w + 30} ${rows[0] + 20} ${x(2) + w + 6} ${rows[0] + 20}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <path d="M${x(2) + w + 12} ${rows[0] + 14} l-6 6 l6 6" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  ${t(x(2) + w + 18, 36, "Review loop", { size: 15, cls: "muted", anchor: "end" })}
+  ${pills}
+  <rect x="26" y="222" width="16" height="16" rx="8" class="tint"/>${t(50, 236, "You decide", { size: 16, cls: "muted" })}
+  <rect x="176.5" y="222.5" width="15" height="15" rx="7.5" class="surface"/>${t(200, 236, "Runs on its own", { size: 16, cls: "muted" })}`;
+})();
 
-const cards = [
+const svgOpen = (viewBox, w, h, alt) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${w}" height="${h}" role="img" aria-label="${escape(alt)}">
+${style()}`;
+
+function desktop({ motif, scale, tx, ty, height = 300, alt }) {
+  return `${svgOpen(`0 0 1200 ${height}`, 1200, height, alt)}
+<defs>${DOTS}<clipPath id="c"><rect x="0.5" y="0.5" width="1199" height="${height - 1}" rx="12"/></clipPath></defs>
+<g clip-path="url(#c)">
+  <rect width="1200" height="${height}" class="canvas"/>
+  <rect width="1200" height="${height}" fill="url(#dots)"/>
+  <g transform="translate(${tx} ${ty}) scale(${scale})">${motif}</g>
+</g>
+<rect x="0.5" y="0.5" width="1199" height="${height - 1}" rx="12" class="hair"/>
+</svg>
+`;
+}
+
+function mobile({ motif, crop: [x, y, w, h], alt }) {
+  return `${svgOpen(`${x} ${y} ${w} ${h}`, w, h, alt)}
+<defs>${DOTS}<clipPath id="c"><rect x="${x + 0.5}" y="${y + 0.5}" width="${w - 1}" height="${h - 1}" rx="12"/></clipPath></defs>
+<g clip-path="url(#c)">
+  <rect x="${x}" y="${y}" width="${w}" height="${h}" class="canvas"/>
+  <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#dots)"/>
+  ${motif}
+</g>
+<rect x="${x + 0.5}" y="${y + 0.5}" width="${w - 1}" height="${h - 1}" rx="12" class="hair"/>
+</svg>
+`;
+}
+
+const wide = (centerY) => ({ scale: 1.3, tx: 210, ty: Math.round(150 - centerY * 1.3) });
+
+const projects = [
+  {
+    file: "trotamundos",
+    desktop: { scale: 1.1, tx: 270, ty: -14, height: 400 },
+    crop: [200, 36, 380, 300],
+    alt: "Trotamundos Today screen: offline badge, large Show address button annotated with a 48 px touch target.",
+  },
   {
     file: "mistarjetas",
-    title: "MisTarjetas.co",
-    status: "wip",
-    statusNote: "launch upcoming",
-    lines: ["Transparent data on Colombian credit and debit", "cards, every value traced to its source."],
-    stack: "Next.js, React, Supabase",
-    alt: "MisTarjetas.co, launch upcoming: transparent data on Colombian cards, every value traced to its source.",
+    desktop: wide(126),
+    crop: [200, 46, 380, 152],
+    alt: "A card next to its details table: annual fee sourced from a PDF, cashback from the T&C, lounge access empty with no source.",
   },
   {
     file: "workflow",
-    title: "workflow-template",
-    status: "wip",
-    statusNote: "public release upcoming",
-    lines: ["An installable AI-assisted dev workflow with", "three human checkpoints."],
-    stack: "Claude Code, Codex, GitHub Actions",
-    alt: "workflow-template, public release upcoming: an installable AI-assisted development workflow with three human checkpoints.",
+    desktop: wide(120),
+    mobileMotif: workflowMobile,
+    crop: [0, 0, 430, 260],
+    alt: "Workflow from issue to validation, with plan, merge and validation as human checkpoints and a review loop back to build.",
   },
   {
     file: "homelab",
-    title: "Homelab Quest",
-    status: "live",
-    statusNote: "level 1",
-    lines: ["Learn Docker by deploying a real Home Assistant,", "one Duolingo-style lesson at a time."],
-    stack: "React, Vite",
-    alt: "Homelab Quest, level 1 live: learn Docker by deploying a real Home Assistant, Duolingo-style.",
+    desktop: wide(111),
+    crop: [120, 40, 450, 150],
+    alt: "A lesson path next to a terminal: docker run --name ha -d is graded correct because flag order doesn't matter.",
   },
   {
     file: "maringa",
-    title: "Maringá – 02.11",
-    status: "published",
-    statusNote: "Nov 2026",
-    lines: ["A bilingual data story on the November 2026", "tornado in Maringá, Brazil."],
-    stack: "Next.js, React",
-    alt: "Maringá 02.11, published November 2026: a bilingual data story on the tornado in Maringá, Brazil.",
+    desktop: wide(102),
+    crop: [150, 50, 424, 152],
+    alt: "Map with damage points along an estimated track, and a source sheet with publisher and date.",
   },
 ];
 
+await mkdir("assets/projects", { recursive: true });
 await writeFile("assets/hero.svg", hero());
-await writeFile("assets/cards/trotamundos.svg", featured({ ...trotamundos, motif: motifs.trotamundos }));
-for (const c of cards) await writeFile(`assets/cards/${c.file}.svg`, card({ ...c, motif: motifs[c.file] }));
-console.log(`Built hero and ${cards.length + 1} cards`);
+await writeFile("assets/hero-mobile.svg", heroMobile());
+for (const p of projects) {
+  await writeFile(`assets/projects/${p.file}.svg`, desktop({ motif: motifs[p.file], ...p.desktop, alt: p.alt }));
+  await writeFile(`assets/projects/${p.file}-mobile.svg`, mobile({ motif: p.mobileMotif ?? motifs[p.file], crop: p.crop, alt: p.alt }));
+}
+console.log(`Built hero and ${projects.length} project illustrations`);

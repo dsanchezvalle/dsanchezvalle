@@ -1,4 +1,4 @@
-// Renders the contribution calendar as an SVG that mirrors GitHub's native graph in light and dark.
+// Renders the contribution calendar as SVGs that mirror GitHub's native graph in light and dark.
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const USER = process.env.GH_USER;
@@ -67,7 +67,7 @@ function monthLabels(weeks) {
   return labels.filter((l, k) => (labels[k + 1]?.i ?? weeks.length) - l.i >= 3);
 }
 
-function render({ totalContributions, weeks }) {
+function render({ totalContributions, weeks }, caption = "in the last year") {
   const gridW = weeks.length * STEP - (STEP - CELL);
   const gridH = 7 * STEP - (STEP - CELL);
   const boxW = PAD * 2 + LABEL_W + gridW;
@@ -113,9 +113,9 @@ function render({ totalContributions, weeks }) {
 
   const total = totalContributions.toLocaleString("en-US");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${total} contributions in the last year">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${total} contributions ${caption}">
 ${STYLE}
-<text x="1" y="18" class="title">${total} contributions in the last year</text>
+<text x="1" y="18" class="title">${total} contributions ${caption}</text>
 <rect x="0.5" y="${TITLE_H + 0.5}" width="${boxW + 1}" height="${boxH}" rx="6" class="box"/>
 <g class="label">${months}${days}${legend}</g>
 ${cells}
@@ -126,4 +126,8 @@ ${cells}
 const calendar = await fetchCalendar();
 await mkdir(OUT_DIR, { recursive: true });
 await writeFile(`${OUT_DIR}/contributions.svg`, render(calendar));
+
+const recent = calendar.weeks.slice(-26);
+const recentTotal = recent.flatMap((w) => w.contributionDays).reduce((sum, d) => sum + d.contributionCount, 0);
+await writeFile(`${OUT_DIR}/contributions-mobile.svg`, render({ totalContributions: recentTotal, weeks: recent }, "in the last 6 months"));
 console.log(`Rendered ${calendar.totalContributions} contributions for ${USER ?? "mock"}`);
