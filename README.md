@@ -16,17 +16,17 @@ Most of this activity happens in private product repos. Here is what it goes int
 
 `Live, invite only` &nbsp;JavaScript, PWA
 
-An offline travel companion I built for my parents' trip, designed for older travelers.
+An offline travel companion I built for my parents' trip, designed for older adults.
 
 <picture>
   <source media="(max-width: 767px)" srcset="assets/projects/trotamundos-mobile.svg">
   <img src="assets/projects/trotamundos.svg" width="100%" alt="Trotamundos Today screen: offline badge, large Show address button annotated with a 48 px touch target.">
 </picture>
 
-- **Tested for older travelers.** I wrote an accessibility brief (48 px touch targets, 7:1 contrast, readable at 200% font size, a taps-per-task budget) and check it with automated tests instead of judging it by eye.
+- **Tested with older adults in mind.** I wrote an accessibility brief (48 px touch targets, 7:1 contrast, readable at 200% font size, a taps-per-task budget) and check it with automated tests instead of judging it by eye.
 - **Nothing to set up.** A "Today" screen opens the right guide from the local time and the itinerary, offline too, instead of a menu of destinations.
 
-**What's next:** my parents' trip was the trigger. Now I want to open it up as a travel app anyone can use, on its own domain, which I already have. The brief stays the same: older travelers first.
+**What's next:** my parents' trip was the trigger. Now I want to open it up as a travel app anyone can use, on its own domain, which I already have. The brief stays the same: older adults first.
 
 ### MisTarjetas.co
 
@@ -95,3 +95,5 @@ A bilingual (Portuguese/Spanish) data story on the November 2026 tornado in Mari
 ---
 
 Full case studies are coming to **frontendlab.dev**. Before frontend, I spent ten years designing social innovation and entrepreneurship programs, which is why I start from the people who will use the thing.
+
+<sub>Colophon: set in Bricolage Grotesque · illustrations are hand-written SVG, light- and dark-aware · the contribution graph re-renders daily via GitHub Actions.</sub>

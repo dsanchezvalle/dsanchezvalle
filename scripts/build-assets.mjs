@@ -30,97 +30,29 @@ ${extra}
 const escape = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function hero() {
-  const pad = 56;
-  const frameTop = 30;
-  const nameBaseline = frameTop + pad + 62;
-  const capTop = nameBaseline - 50;
-  const roleBaseline = nameBaseline + 24 + 26;
-  const animation = `
-.redline { opacity: 0; animation: reveal 600ms ease-out 500ms forwards; }
-@keyframes reveal { to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .redline { opacity: 1; animation: none; } }`;
-
-  const handles = [
-    [0.5, frameTop],
-    [1199.5, frameTop],
-    [0.5, 379.5],
-    [1199.5, 379.5],
-  ]
-    .map(([x, y]) => `<rect x="${x - 3.5}" y="${y - 3.5}" width="7" height="7" fill="var(--canvas)" stroke="var(--spec)"/>`)
-    .join("");
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 384" width="1200" height="384" role="img" aria-label="David Sánchez Valle. Frontend engineer for product, UX and design systems. Medellín, Colombia.">
-${style(animation)}
-<text x="0" y="18" font-size="13" class="spec">profile / david-sanchez-valle</text>
-<rect x="0.5" y="${frameTop}" width="1199" height="349.5" class="hair"/>
-
-<text x="${pad}" y="${nameBaseline}" font-size="76" class="display">David Sánchez Valle</text>
-<text x="${pad}" y="${roleBaseline}" font-size="24">Frontend engineer for product, UX and design systems</text>
-<text x="${pad}" y="${roleBaseline + 44}" font-size="18" class="muted">I turn product intent into accessible, coherent interfaces with React and Next.js,</text>
-<text x="${pad}" y="${roleBaseline + 70}" font-size="18" class="muted">and I write down what I decided, what I ruled out and why.</text>
-<text x="${pad}" y="${379 - 34}" font-size="16" class="muted">Medellín, Colombia</text>
-
-<g class="redline">
-  <rect x="0.5" y="${frameTop}" width="1199" height="349.5" class="spec-line"/>
-  ${handles}
-  <path d="M${pad + 120} ${frameTop + 1} V${capTop}" class="spec-line"/>
-  <path d="M${pad + 114} ${frameTop + 1} H${pad + 126} M${pad + 114} ${capTop} H${pad + 126}" class="spec-line"/>
-  <rect x="${pad + 130}" y="${(frameTop + capTop) / 2 - 10}" width="28" height="20" rx="3" fill="var(--spec)"/>
-  <text x="${pad + 144}" y="${(frameTop + capTop) / 2 + 4.5}" font-size="12" text-anchor="middle" fill="var(--canvas)" style="fill: var(--canvas)">56</text>
-
-  <path d="M1 ${nameBaseline + 70} H${pad - 1}" class="spec-line"/>
-  <path d="M1 ${nameBaseline + 64} V${nameBaseline + 76} M${pad - 1} ${nameBaseline + 64} V${nameBaseline + 76}" class="spec-line"/>
-  <rect x="${pad / 2 - 14}" y="${nameBaseline + 78}" width="28" height="20" rx="3" fill="var(--spec)"/>
-  <text x="${pad / 2}" y="${nameBaseline + 92.5}" font-size="12" text-anchor="middle" style="fill: var(--canvas)">56</text>
-
-  <path d="M${pad + 760} ${nameBaseline - 26} H${pad + 790}" class="spec-line" stroke-dasharray="3 3"/>
-  <text x="${pad + 798}" y="${nameBaseline - 30}" font-size="13" class="spec">Bricolage Grotesque, 600</text>
-  <text x="${pad + 798}" y="${nameBaseline - 12}" font-size="13" class="spec">76 / 84, tracking 0</text>
-</g>
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 282" width="1200" height="282" role="img" aria-label="David Sánchez Valle. Frontend engineer for product, UX and design systems. Medellín, Colombia.">
+${style()}
+<text x="0" y="88" font-size="84" class="display">David Sánchez Valle</text>
+<text x="1" y="142" font-size="26">Frontend engineer for product, UX and design systems</text>
+<text x="1" y="188" font-size="19" class="muted">I turn product intent into accessible, coherent interfaces with React and Next.js,</text>
+<text x="1" y="216" font-size="19" class="muted">and I write down what I decided, what I ruled out and why.</text>
+<text x="1" y="268" font-size="16" class="muted">Medellín, Colombia</text>
 </svg>
 `;
 }
 
-
 function heroMobile() {
-  const pad = 40;
-  const frameTop = 34;
-  const capTop = frameTop + pad;
-  const line1 = capTop + 46;
-  const animation = `
-.redline { opacity: 0; animation: reveal 600ms ease-out 500ms forwards; }
-@keyframes reveal { to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .redline { opacity: 1; animation: none; } }`;
-  const tagline = ["I turn product intent into accessible,", "coherent interfaces with React and", "Next.js, and I write down what I", "decided, what I ruled out and why."];
-  const handles = [
-    [0.5, frameTop],
-    [639.5, frameTop],
-    [0.5, 519.5],
-    [639.5, 519.5],
-  ]
-    .map(([x, y]) => `<rect x="${x - 3.5}" y="${y - 3.5}" width="7" height="7" fill="var(--canvas)" stroke="var(--spec)"/>`)
-    .join("");
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 524" width="640" height="524" role="img" aria-label="David Sánchez Valle. Frontend engineer for product, UX and design systems. Medellín, Colombia.">
-${style(animation)}
-<text x="0" y="22" font-size="17" class="spec">profile / david-sanchez-valle</text>
-<rect x="0.5" y="${frameTop}" width="639" height="485.5" class="hair"/>
-<text x="${pad}" y="${line1}" font-size="70" class="display">David</text>
-<text x="${pad}" y="${line1 + 76}" font-size="70" class="display">Sánchez Valle</text>
-<text x="${pad}" y="${line1 + 136}" font-size="28">Frontend engineer for product,</text>
-<text x="${pad}" y="${line1 + 172}" font-size="28">UX and design systems</text>
-${tagline.map((l, i) => `<text x="${pad}" y="${line1 + 228 + i * 33}" font-size="24" class="muted">${l}</text>`).join("\n")}
-<text x="${pad}" y="${519 - 30}" font-size="20" class="muted">Medellín, Colombia</text>
-<g class="redline">
-  <rect x="0.5" y="${frameTop}" width="639" height="485.5" class="spec-line"/>
-  ${handles}
-  <path d="M${pad + 230} ${frameTop + 1} V${capTop} M${pad + 224} ${frameTop + 1} H${pad + 236} M${pad + 224} ${capTop} H${pad + 236}" class="spec-line"/>
-  <rect x="${pad + 242}" y="${(frameTop + capTop) / 2 - 11}" width="32" height="22" rx="4" fill="var(--spec)"/>
-  <text x="${pad + 258}" y="${(frameTop + capTop) / 2 + 5}" font-size="14" text-anchor="middle" style="fill: var(--canvas)">40</text>
-  <path d="M${pad + 220} ${line1 - 24} H${pad + 252}" class="spec-line" stroke-dasharray="3 3"/>
-  <text x="${pad + 260}" y="${line1 - 28}" font-size="16" class="spec">Bricolage Grotesque, 600</text>
-  <text x="${pad + 260}" y="${line1 - 7}" font-size="16" class="spec">70 / 76, tracking 0</text>
-</g>
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 446" width="640" height="446" role="img" aria-label="David Sánchez Valle. Frontend engineer for product, UX and design systems. Medellín, Colombia.">
+${style()}
+<text x="0" y="78" font-size="72" class="display">David</text>
+<text x="0" y="156" font-size="72" class="display">Sánchez Valle</text>
+<text x="1" y="212" font-size="28">Frontend engineer for product,</text>
+<text x="1" y="248" font-size="28">UX and design systems</text>
+<text x="1" y="298" font-size="24" class="muted">I turn product intent into accessible,</text>
+<text x="1" y="331" font-size="24" class="muted">coherent interfaces with React and</text>
+<text x="1" y="364" font-size="24" class="muted">Next.js, and I write down what I</text>
+<text x="1" y="397" font-size="24" class="muted">decided, what I ruled out and why.</text>
+<text x="1" y="442" font-size="20" class="muted">Medellín, Colombia</text>
 </svg>
 `;
 }
